@@ -38,10 +38,10 @@ else:
 browser.get("https://boxcritters.com/")
 
 login_username = browser.find_element_by_id('username')
-login_username.send_keys("<ENTER YOUR BOX CRITTERS EMAIL HERE>")
+login_username.send_keys("ENTER YOUR BOX CRITTERS EMAIL HERE")
 
 login_password = browser.find_element_by_id('password')
-login_password.send_keys("<ENTER YOUR BOX CRITTERS PASSWORD HERE>")
+login_password.send_keys("ENTER YOUR BOX CRITTERS PASSWORD HERE")
 
 login_button = browser.find_element_by_id('loginButton')
 login_button.click()
@@ -51,19 +51,31 @@ print(console)
 
 #Main
 def Main():
-    #Discord Presence Stuff
-    client_id = "833288037664030720"
-    RPC = Presence(client_id)
-    RPC.connect()
-    print(RPC.update(state="Test", details="In the Port"))
-    #Main Loop
-    while(True):
+    try:
+        currentroom = browser.execute_script("return world.room.roomId")
+        username = browser.execute_script("return world.player.nickname")
+        #Discord Presence Stuff
+        client_id = "833288037664030720"
+        RPC = Presence(client_id)
+        RPC.connect()
+        print(RPC.update(state=username, details="In the " + currentroom.capitalize(), large_image="beaver", large_text="https://boxcritters.com/"))
+        #Main Loop
+        while(True):
+            time.sleep(15)
+            tempcurrentroom = browser.execute_script("return world.room.roomId")
+            tempcurrentroom
+            if(tempcurrentroom.lower() != currentroom.lower()):
+                currentroom = tempcurrentroom
+                RPC.update(state=username, details="In the " + currentroom.capitalize(), large_image="beaver", large_text="https://boxcritters.com/")
+    except:
         time.sleep(15)
-        print(console)
-
+        Main()
+        return
+            
 #Checks for if the Player is in the game
 def waitUntilPlaying():
     while(True):
+        time.sleep(2)
         if(browser.current_url == "https://boxcritters.com/play/index.html"):
             print("gottem")
             Main()
